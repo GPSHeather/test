@@ -1,0 +1,34 @@
+<?php
+function get_associated_photo ($partnumber) {
+	$url = "https://www.northern-lights.com/api/v1/part-numbers/$partnumber";
+	$json = file_get_contents($url);
+	$json_data = json_decode($json, false);
+	
+if (empty($json_data['usedWithData'])) {
+$table='';
+} 
+
+else {
+
+// Loop through Array to get Part Numbers of associated parts
+	foreach ($json_data['usedWithData'] as $key => $value) {
+	    $assoc_parts[] = array (
+	    	"part" => $value["partNumber"],
+ 	   		"desc" => $value["description"]
+ 	   );
+	}
+	$table = "<h4>Items Often Purchased with this Item:</h4>";
+	$table .= "<TABLE>\r\n";
+	$table .= "\t\t<TR><TH>Part Number</TH><TH>Description</TH></TR>\r\n";
+	foreach ($assoc_parts as $key => $value) {
+
+		$table .= "\t<TR>\r\n";
+		$table .= "\t\t<TD><a href='https://bishopmarine.com/product/".$value['part']."/'>".$value['part']."</a></TD>\r\n";
+		$table .= "\t\t<TD>".$value['desc']."</TD>\r\n";
+		$table .= "\t</TR>\r\n";
+	}
+	$table .= "</TABLE>\r\n";
+}
+	return $table;
+}
+?>
